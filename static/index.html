@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LinArt Belege</title>
+<style>
+:root{
+  --bg:#161a20; --panel:#1c2129; --raised:#242b35; --sunken:#12161b; --line:#2e3742; --line-soft:#252d37;
+  --text:#dde4ea; --muted:#8b97a4; --faint:#5f6b78; --accent:#6cd3e6; --accent-ink:#0d2a31; --accent-soft:rgba(108,211,230,.14);
+  --warn:#f0a24a; --err:#ef6b6b; --ok:#7ad69a; --r:6px;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif; color-scheme:dark;
+}
+*{box-sizing:border-box} html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--text);font:14px/1.45 var(--font);overflow:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+.num{font-variant-numeric:tabular-nums} [hidden]{display:none!important}
+.top{height:52px;display:flex;align-items:center;gap:14px;padding:0 16px;border-bottom:1px solid var(--line);background:var(--panel)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.08em;font-size:13px;white-space:nowrap}
+.brand span{color:var(--muted);font-weight:500}
+.spacer{flex:1}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.seg button{background:var(--sunken);border:0;border-right:1px solid var(--line);padding:6px 12px;cursor:pointer;color:var(--muted)}
+.seg button:last-child{border-right:0} .seg button[aria-pressed=true]{background:var(--accent-soft);color:var(--accent)}
+.pill{display:flex;align-items:center;gap:8px;padding:5px 12px;border:1px solid var(--line);border-radius:99px;background:var(--sunken);font-size:12.5px;color:var(--muted)}
+.pill i{width:8px;height:8px;border-radius:50%;background:var(--faint)} .pill.ok i{background:var(--ok)} .pill.bad i{background:var(--err)} .pill.busy i{background:var(--warn)}
+select,input,textarea{background:var(--sunken);border:1px solid var(--line);border-radius:var(--r);padding:7px 9px;width:100%}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--raised);border:1px solid var(--line);border-radius:var(--r);padding:8px 12px;cursor:pointer;white-space:nowrap;text-decoration:none;color:var(--text)}
+.btn:hover:not(:disabled){border-color:var(--faint)} .btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:650}
+.btn.danger:hover:not(:disabled){border-color:var(--err);color:var(--err)}
+.app{display:grid;grid-template-columns:360px minmax(0,1fr) 400px;height:calc(100vh - 52px)}
+.app.sum{grid-template-columns:360px minmax(0,1fr)}
+.side{background:var(--panel);overflow-y:auto;display:flex;flex-direction:column;min-height:0}
+.left{border-right:1px solid var(--line)} .right{border-left:1px solid var(--line)}
+.sec{padding:14px 16px;border-bottom:1px solid var(--line-soft)}
+h2{font-size:15px;margin:0 0 10px} label.f{display:block;font-size:12px;color:var(--muted);margin:10px 0 4px}
+.hint{font-size:12px;color:var(--muted);margin:6px 0 0}
+.drop{display:block;border:1.5px dashed var(--line);border-radius:8px;padding:16px;text-align:center;color:var(--muted);cursor:pointer;background:var(--sunken);font-size:13px}
+.drop:hover,.drop.over{border-color:var(--accent);color:var(--text)} .drop input{display:none}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--sunken);border-radius:99px;padding:3px 10px;font-size:12px;cursor:pointer;color:var(--muted)}
+.chip[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+.list{flex:1;overflow-y:auto;padding:6px 8px 12px}
+.item{display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:center;padding:8px;border-radius:8px;cursor:pointer;border:1px solid transparent}
+.item:hover{background:var(--raised)} .item.cur{border-color:var(--accent);background:var(--raised)}
+.item img{width:44px;height:56px;object-fit:cover;border-radius:4px;background:#fff1}
+.item .v{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .m{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .a{text-align:right;font-weight:600}
+.st{display:inline-block;font-size:11px;border-radius:4px;padding:1px 6px;margin-top:3px;background:var(--sunken);color:var(--muted)}
+.st.geprueft{color:var(--ok)} .st.zu_pruefen{color:var(--warn)} .st.fehler{color:var(--err)} .st.verarbeitung,.st.neu{color:var(--accent)}
+.center{display:flex;flex-direction:column;min-width:0;background:#0f1216}
+.viewer{flex:1;overflow:auto;display:flex;align-items:flex-start;justify-content:center;padding:18px}
+.viewer img{max-width:100%;box-shadow:0 10px 40px rgba(0,0,0,.5);border-radius:4px;background:#fff}
+.vbar{display:flex;gap:8px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line);background:var(--panel);min-height:48px}
+.vbar .t{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.empty{margin:auto;color:var(--muted);text-align:center;max-width:420px;padding:20px}
+.empty b{display:block;color:var(--text);font-size:18px;margin-bottom:6px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 10px} .grid3{display:grid;grid-template-columns:70px 1fr 1fr 26px;gap:6px;align-items:center;margin-top:6px}
+.warns{margin:12px 0 0;padding:10px 12px;border-left:3px solid var(--warn);background:rgba(240,162,74,.08);border-radius:4px;font-size:12.5px}
+.warns div+div{margin-top:4px}
+.err{border-left-color:var(--err);background:rgba(239,107,107,.08)}
+.actions{position:sticky;bottom:0;background:var(--panel);border-top:1px solid var(--line);padding:12px 16px;display:flex;gap:8px;flex-wrap:wrap}
+.actions .primary{flex:1}
+.x{background:none;border:0;color:var(--muted);cursor:pointer;font-size:15px}
+.sumwrap{overflow-y:auto;padding:20px 24px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.card small{color:var(--muted)} .card div{font-size:24px;font-weight:700;margin-top:4px}
+table{width:100%;border-collapse:collapse;font-size:13px;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+th,td{padding:8px 12px;border-bottom:1px solid var(--line-soft);text-align:left} th{color:var(--muted);font-weight:600;font-size:12px}
+td.r,th.r{text-align:right}
+.bars{display:grid;gap:6px;margin-top:8px}
+.bar{display:grid;grid-template-columns:70px 1fr 100px;gap:10px;align-items:center;font-size:12px}
+.bar .t{height:10px;background:var(--line-soft);border-radius:5px;position:relative;overflow:hidden}
+.bar .t i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:5px}
+.note{font-size:12px;color:var(--muted);margin:14px 0}
+.toasts{position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;gap:8px;z-index:9}
+.toast{background:var(--raised);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:var(--r);padding:9px 13px;font-size:13px;max-width:380px}
+.toast.err{border-left-color:var(--err)} .toast.ok{border-left-color:var(--ok)}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <svg width="28" height="26" viewBox="0 0 30 28" aria-hidden="true"><path d="M1.5 26 L11 11 L15 16.5 L20 7 L28.5 26 Z" fill="#3a4654"/><path d="M20 7 L16.6 13.4 L18.4 12.6 L20 14.6 L21.8 12.4 L23.2 13.1 Z" fill="#fff"/><path d="M1.5 26 H28.5" stroke="var(--accent)" stroke-width="1.6"/></svg>
+    LINART <span>BELEGE</span>
+  </div>
+  <div class="seg" id="view"><button data-v="list" data-i="v_list"></button><button data-v="sum" data-i="v_sum"></button></div>
+  <select id="year" style="width:auto"></select>
+  <div class="spacer"></div>
+  <div class="pill" id="pill"><i></i><span id="pillT">…</span></div>
+  <div class="seg" id="lang"><button data-l="ru">RU</button><button data-l="de">DE</button></div>
+</header>
+<main class="app" id="app">
+  <aside class="side left">
+    <div class="sec">
+      <label class="drop" id="drop"><input type="file" id="files" multiple accept=".pdf,.jpg,.jpeg,.png,.heic,.heif,.webp,.tif,.tiff"><b data-i="drop_t"></b><div class="hint" data-i="drop_h"></div></label>
+      <p class="hint" id="inboxHint"></p>
+    </div>
+    <div class="sec" style="padding-bottom:8px"><div class="filters" id="filters"></div></div>
+    <div class="list" id="list"></div>
+  </aside>
+  <section class="center" id="center">
+    <div class="vbar"><span class="t" id="vt"></span><div class="spacer"></div><a class="btn" id="openOrig" target="_blank" hidden data-i="open_orig"></a></div>
+    <div class="viewer" id="viewer"><div class="empty"><b data-i="empty_t"></b><span data-i="empty_d"></span></div></div>
+  </section>
+  <section class="center" id="sumView" hidden><div class="sumwrap" id="sum"></div></section>
+  <aside class="side right" id="right">
+    <div class="sec" id="form" hidden>
+      <h2 data-i="check"></h2>
+      <div class="grid2">
+        <div><label class="f" data-i="f_type"></label><select id="doc_type"><option value="ausgabe">Ausgabe</option><option value="einnahme">Einnahme</option><option value="unklar">?</option></select></div>
+        <div><label class="f" data-i="f_date"></label><input id="date" type="date"></div>
+      </div>
+      <label class="f" data-i="f_vendor"></label><input id="vendor">
+      <div class="grid2">
+        <div><label class="f" data-i="f_no"></label><input id="invoice_number"></div>
+        <div><label class="f" data-i="f_pay"></label><input id="payment_method"></div>
+      </div>
+      <label class="f" data-i="f_desc"></label><textarea id="description" rows="2"></textarea>
+      <label class="f" data-i="f_cat"></label><select id="category"></select>
+      <div class="grid2">
+        <div><label class="f" data-i="f_gross"></label><input id="total_gross" type="number" step="0.01" class="num"></div>
+        <div><label class="f" data-i="f_cur"></label><input id="currency"></div>
+      </div>
+      <label class="f"><span data-i="f_vat"></span> <button class="x" id="addVat" title="+">＋</button></label>
+      <div id="vat"></div>
+      <label class="f" data-i="f_notes"></label><textarea id="notes" rows="2"></textarea>
+      <div id="warns"></div>
+      <p class="hint" id="meta"></p>
+    </div>
+    <div class="actions" id="actions" hidden>
+      <button class="btn primary" id="confirm"></button>
+      <button class="btn" id="save" data-i="save"></button>
+      <button class="btn" id="redo" data-i="redo"></button>
+      <button class="btn danger" id="del" data-i="del"></button>
+    </div>
+  </aside>
+</main>
+<div class="toasts" id="toasts"></div>
+<script>
+"use strict";
+const I = {
+ru:{v_list:"Чеки",v_sum:"Сводка",drop_t:"Перетащите чеки и счета",drop_h:"PDF, JPG, PNG, HEIC (фото с iPhone) — можно сразу пачкой",inbox:"Или кладите файлы в папку: {p}",
+ all:"Все",zu_pruefen:"Проверить",geprueft:"Проверено",fehler:"Ошибки",neu:"Новые",verarbeitung:"Распознаётся",
+ empty_t:"Выберите чек слева",empty_d:"Распознавание идёт локально через Qwen3-VL в LM Studio — ничего не уходит в облако.",
+ open_orig:"Оригинал ↗",check:"Проверка",f_type:"Вид",f_date:"Дата",f_vendor:"Контрагент",f_no:"Номер документа",f_pay:"Оплата",f_desc:"Что куплено",
+ f_cat:"Категория EÜR",f_gross:"Сумма брутто",f_cur:"Валюта",f_vat:"НДС (информативно, вычета нет)",f_notes:"Заметка (для Bewirtung: повод и участники)",
+ confirm:"Подтвердить ✓  (Ctrl+Enter)",unconfirm:"Снять подтверждение",save:"Сохранить",redo:"Распознать заново",del:"Удалить",
+ st_ok:"LM Studio: {m}",st_bad:"LM Studio не запущен — распознавание ждёт",st_q:"в очереди {n}",
+ saved:"Сохранено",confirmed:"Подтверждено и заархивировано",deleted:"Удалено",uploaded:"Загружено: {n}, дубликатов: {d}",
+ del_q:"Удалить этот документ и его оригинал из архива?",income:"Доходы",exp:"Расходы к вычету",profit:"Результат до AfA",
+ by_cat:"По категориям",by_month:"По месяцам",cat:"Категория",cnt:"Шт.",gross:"Брутто",ded:"К вычету",only_conf:"Только подтверждённые",
+ xlsx:"Excel для EÜR / налогового консультанта",csv:"CSV",afa:"Анлагегüter (AfA) — распределить на срок службы:",
+ meta:"Файл: {f} · загружен {c} · SHA-256 {s}…",err_t:"Ошибка распознавания",year_all:"Все годы",to_check:"Нужно проверить: {n}"},
+de:{v_list:"Belege",v_sum:"Übersicht",drop_t:"Belege hierher ziehen",drop_h:"PDF, JPG, PNG, HEIC (iPhone-Fotos) – auch mehrere auf einmal",inbox:"Oder Dateien in diesen Ordner legen: {p}",
+ all:"Alle",zu_pruefen:"Zu prüfen",geprueft:"Geprüft",fehler:"Fehler",neu:"Neu",verarbeitung:"Wird erkannt",
+ empty_t:"Beleg links auswählen",empty_d:"Erkennung lokal mit Qwen3-VL in LM Studio – nichts geht in die Cloud.",
+ open_orig:"Original ↗",check:"Prüfung",f_type:"Art",f_date:"Datum",f_vendor:"Partner",f_no:"Beleg-Nr.",f_pay:"Zahlung",f_desc:"Beschreibung",
+ f_cat:"EÜR-Kategorie",f_gross:"Betrag brutto",f_cur:"Währung",f_vat:"USt (nur Info, kein Vorsteuerabzug)",f_notes:"Notiz (Bewirtung: Anlass und Teilnehmer)",
+ confirm:"Bestätigen ✓  (Strg+Enter)",unconfirm:"Bestätigung aufheben",save:"Speichern",redo:"Neu erkennen",del:"Löschen",
+ st_ok:"LM Studio: {m}",st_bad:"LM Studio nicht erreichbar – Erkennung wartet",st_q:"Warteschlange {n}",
+ saved:"Gespeichert",confirmed:"Bestätigt und archiviert",deleted:"Gelöscht",uploaded:"Importiert: {n}, Duplikate: {d}",
+ del_q:"Diesen Beleg und das Original aus dem Archiv löschen?",income:"Einnahmen",exp:"Abziehbare Ausgaben",profit:"Ergebnis vor AfA",
+ by_cat:"Nach Kategorie",by_month:"Nach Monat",cat:"Kategorie",cnt:"Anz.",gross:"Brutto",ded:"Abziehbar",only_conf:"Nur geprüfte",
+ xlsx:"Excel für EÜR / Steuerberater",csv:"CSV",afa:"Anlagegüter (AfA) – auf Nutzungsdauer verteilen:",
+ meta:"Datei: {f} · importiert {c} · SHA-256 {s}…",err_t:"Erkennungsfehler",year_all:"Alle Jahre",to_check:"Zu prüfen: {n}"}};
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const ls = {get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+let L = ls.get("bel.lang") || "ru"; if(!I[L]) L = "ru";
+const t = (k, v) => { let s = I[L][k] ?? k; if(v) for(const x in v) s = s.split("{"+x+"}").join(v[x]); return s; };
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const eur = n => (n == null || n === "") ? "—" : Number(n).toLocaleString("de-DE",{style:"currency",currency:"EUR"});
+function toast(m, k){ const e = document.createElement("div"); e.className = "toast "+(k||""); e.textContent = m; $("#toasts").appendChild(e); setTimeout(() => e.remove(), k==="err"?8000:3500); }
+async function api(p, o){ const r = await fetch(p, o); let d = null; try{ d = await r.json(); }catch(e){} if(!r.ok) throw new Error((d && (d.detail||d.error)) || r.statusText); return d; }
+
+const S = {view: ls.get("bel.view") || "list", year: ls.get("bel.year") || String(new Date().getFullYear()), filter: "all", rows: [], cur: null, cats: {}, status: null, onlyConf: true};
+
+function applyI(){
+  document.documentElement.lang = L;
+  $$("[data-i]").forEach(e => e.textContent = t(e.dataset.i));
+  $$("#lang button").forEach(b => b.setAttribute("aria-pressed", b.dataset.l === L));
+  $$("#view button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === S.view));
+  renderFilters(); renderList(); renderForm(); renderStatus(); if(S.view === "sum") loadSummary();
+}
+$$("#lang button").forEach(b => b.onclick = () => { L = b.dataset.l; ls.set("bel.lang", L); applyI(); });
+$$("#view button").forEach(b => b.onclick = () => { S.view = b.dataset.v; ls.set("bel.view", S.view); setView(); applyI(); });
+function setView(){
+  const sum = S.view === "sum";
+  $("#app").classList.toggle("sum", sum); $("#center").hidden = sum; $("#right").hidden = sum; $("#sumView").hidden = !sum;
+}
+function fillYears(){
+  const y = new Date().getFullYear(), sel = $("#year");
+  sel.innerHTML = `<option value="">${esc(t("year_all"))}</option>` + [y+1, y, y-1, y-2].map(v => `<option ${String(v)===S.year?"selected":""}>${v}</option>`).join("");
+}
+$("#year").onchange = e => { S.year = e.target.value; ls.set("bel.year", S.year); load(); if(S.view==="sum") loadSummary(); };
+
+const FILTERS = ["all","zu_pruefen","geprueft","fehler"];
+function renderFilters(){
+  const n = s => S.rows.filter(r => s === "all" || r.status === s || (s==="zu_pruefen" && (r.status==="neu"||r.status==="verarbeitung"))).length;
+  $("#filters").innerHTML = FILTERS.map(f => `<button class="chip" data-f="${f}" aria-pressed="${S.filter===f}">${esc(t(f))} <span class="num">${n(f)}</span></button>`).join("");
+  $$("#filters .chip").forEach(b => b.onclick = () => { S.filter = b.dataset.f; renderFilters(); renderList(); });
+}
+function renderList(){
+  const rows = S.rows.filter(r => S.filter === "all" || r.status === S.filter || (S.filter==="zu_pruefen" && (r.status==="neu"||r.status==="verarbeitung")));
+  $("#list").innerHTML = rows.map(r => `<div class="item ${S.cur && S.cur.id===r.id ? "cur":""}" data-id="${r.id}">
+    <img src="${esc(r.preview_url)}?v=${r.id}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">
+    <div style="min-width:0"><div class="v">${esc(r.vendor || r.file_name)}</div><div class="m">${esc(r.date||"")} · ${esc(r.category_label||"")}</div>
+    <span class="st ${esc(r.status)}">${esc(t(r.status))}</span>${(r.warnings||[]).length ? ` <span class="st" style="color:var(--warn)">⚠ ${r.warnings.length}</span>`:""}</div>
+    <div class="a num" style="${r.doc_type==="einnahme"?"color:var(--ok)":""}">${r.total_gross!=null ? (r.doc_type==="einnahme"?"+":"")+eur(r.total_gross) : ""}</div></div>`).join("");
+  $$("#list .item").forEach(e => e.onclick = () => select(+e.dataset.id));
+}
+async function load(){
+  try{ S.rows = await api("/api/belege" + (S.year ? "?year="+S.year : "")); }catch(e){ toast(e.message,"err"); return; }
+  if(S.cur){ const n = S.rows.find(r => r.id === S.cur.id); if(n && n.status !== S.cur.status) { S.cur = n; renderForm(); } }
+  renderFilters(); renderList();
+}
+function select(id){
+  S.cur = S.rows.find(r => r.id === id) || null;
+  renderList(); renderForm();
+}
+function renderForm(){
+  const r = S.cur, show = !!r;
+  $("#form").hidden = !show; $("#actions").hidden = !show; $("#openOrig").hidden = !show;
+  if(!r){ $("#vt").textContent = ""; return; }
+  $("#vt").textContent = (r.vendor || r.file_name) + (r.date ? " · " + r.date : "");
+  $("#openOrig").href = r.original_url;
+  $("#viewer").innerHTML = `<img src="${esc(r.preview_url)}?v=${Date.now()}" alt="">`;
+  $("#category").innerHTML = Object.entries(S.cats).map(([k,v]) => `<option value="${k}">${esc(v)}</option>`).join("");
+  for(const k of ["doc_type","date","vendor","invoice_number","payment_method","description","category","total_gross","currency","notes"]) $("#"+k).value = r[k] ?? "";
+  renderVat(r.vat_lines || []);
+  const ws = (r.warnings||[]).map(w => `<div>⚠ ${esc(w)}</div>`).join("");
+  $("#warns").innerHTML = (r.error ? `<div class="warns err"><b>${esc(t("err_t"))}:</b> ${esc(r.error)}</div>` : "") + (ws ? `<div class="warns">${ws}</div>` : "");
+  $("#meta").textContent = t("meta",{f:r.file_name,c:r.created,s:(r.sha256||"").slice(0,12)});
+  const conf = r.status === "geprueft";
+  $("#confirm").textContent = conf ? t("unconfirm") : t("confirm");
+  $("#confirm").classList.toggle("primary", !conf);
+  $$("#form input,#form select,#form textarea,#addVat").forEach(e => e.disabled = conf);
+  $("#save").disabled = conf; $("#redo").disabled = conf || r.status==="verarbeitung"; $("#del").disabled = conf;
+}
+function renderVat(lines){
+  $("#vat").innerHTML = lines.map((l,i) => `<div class="grid3" data-i="${i}"><input class="num" data-k="rate" value="${l.rate??""}" placeholder="%"><input class="num" data-k="net" value="${l.net??""}" placeholder="netto"><input class="num" data-k="vat" value="${l.vat??""}" placeholder="USt"><button class="x" data-rm="${i}">✕</button></div>`).join("");
+  $$("#vat [data-rm]").forEach(b => b.onclick = () => { const v = readVat(); v.splice(+b.dataset.rm,1); renderVat(v); });
+}
+function readVat(){ return $$("#vat .grid3").map(g => { const o = {}; g.querySelectorAll("input").forEach(i => o[i.dataset.k] = parseFloat(String(i.value).replace(",", ".")) || 0); return o; }); }
+$("#addVat").onclick = e => { e.preventDefault(); const v = readVat(); v.push({rate:19,net:0,vat:0}); renderVat(v); };
+function formData(){
+  const o = {}; for(const k of ["doc_type","date","vendor","invoice_number","payment_method","description","category","currency","notes"]) o[k] = $("#"+k).value;
+  o.total_gross = parseFloat(String($("#total_gross").value).replace(",", ".")) || 0; o.vat_lines = readVat(); return o;
+}
+async function put(extra){
+  const r = await api("/api/belege/"+S.cur.id, {method:"PUT", headers:{"Content-Type":"application/json"}, body: JSON.stringify({...formData(), ...extra})});
+  S.cur = r; const i = S.rows.findIndex(x => x.id === r.id); if(i >= 0) S.rows[i] = r; renderFilters(); renderList(); renderForm(); return r;
+}
+$("#save").onclick = async () => { try{ await put({}); toast(t("saved"),"ok"); }catch(e){ toast(e.message,"err"); } };
+async function confirmCur(){
+  if(!S.cur) return;
+  try{
+    if(S.cur.status === "geprueft"){ await put({unconfirm:true}); return; }
+    await put({confirm:true}); toast(t("confirmed"),"ok");
+    const next = S.rows.find(r => r.status === "zu_pruefen"); if(next) select(next.id);
+  }catch(e){ toast(e.message,"err"); }
+}
+$("#confirm").onclick = confirmCur;
+document.addEventListener("keydown", e => { if((e.ctrlKey||e.metaKey) && e.key === "Enter"){ e.preventDefault(); confirmCur(); } });
+$("#redo").onclick = async () => { try{ await api(`/api/belege/${S.cur.id}/reextract`, {method:"POST"}); load(); }catch(e){ toast(e.message,"err"); } };
+$("#del").onclick = async () => { if(!confirm(t("del_q"))) return; try{ await api("/api/belege/"+S.cur.id, {method:"DELETE"}); S.cur = null; toast(t("deleted")); load(); renderForm(); $("#viewer").innerHTML = ""; }catch(e){ toast(e.message,"err"); } };
+
+async function upload(files){
+  if(!files.length) return;
+  const fd = new FormData(); [...files].forEach(f => fd.append("files", f, f.name));
+  try{ const r = await api("/api/upload", {method:"POST", body:fd});
+    const n = r.filter(x => x.status==="importiert").length, d = r.filter(x => x.status==="duplikat").length;
+    r.filter(x => x.status==="abgelehnt").forEach(x => toast(x.file+": "+x.reason, "err"));
+    toast(t("uploaded",{n,d}), "ok"); S.filter = "zu_pruefen"; load();
+  }catch(e){ toast(e.message,"err"); }
+}
+$("#files").onchange = e => { upload(e.target.files); e.target.value = ""; };
+const dz = $("#drop");
+dz.ondragover = e => { e.preventDefault(); dz.classList.add("over"); };
+dz.ondragleave = () => dz.classList.remove("over");
+dz.ondrop = e => { e.preventDefault(); dz.classList.remove("over"); upload(e.dataTransfer.files); };
+
+async function pollStatus(){
+  try{ S.status = await api("/api/status"); S.cats = S.status.categories; }catch(e){ S.status = null; }
+  renderStatus();
+}
+function renderStatus(){
+  const p = $("#pill"), st = S.status; p.className = "pill";
+  if(!st){ p.classList.add("bad"); $("#pillT").textContent = "offline"; return; }
+  $("#inboxHint").textContent = t("inbox",{p:st.eingang});
+  if(!st.llm_ok){ p.classList.add("bad"); $("#pillT").textContent = t("st_bad"); return; }
+  p.classList.add(st.queue ? "busy" : "ok");
+  $("#pillT").textContent = t("st_ok",{m:"Qwen3-VL"}) + (st.queue ? " · " + t("st_q",{n:st.queue}) : "");
+}
+
+async function loadSummary(){
+  let s; try{ s = await api(`/api/summary?only_confirmed=${S.onlyConf}` + (S.year ? "&year="+S.year : "")); }catch(e){ toast(e.message,"err"); return; }
+  const max = Math.max(1, ...Object.values(s.monate).flatMap(m => [m.einnahmen, m.ausgaben]));
+  const q = `?only_confirmed=${S.onlyConf}` + (S.year ? "&year="+S.year : "");
+  const open = S.rows.filter(r => r.status !== "geprueft").length;
+  $("#sum").innerHTML = `
+   <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+     <label style="display:flex;gap:6px;align-items:center;font-size:13px;cursor:pointer"><input type="checkbox" id="oc" style="width:auto" ${S.onlyConf?"checked":""}> ${esc(t("only_conf"))}</label>
+     ${open ? `<span class="st zu_pruefen">${esc(t("to_check",{n:open}))}</span>` : ""}
+     <div class="spacer"></div>
+     <a class="btn primary" href="/api/export.xlsx${q}">⬇ ${esc(t("xlsx"))}</a><a class="btn" href="/api/export.csv${q}">⬇ ${esc(t("csv"))}</a>
+   </div>
+   <div class="cards">
+     <div class="card"><small>${esc(t("income"))}</small><div class="num" style="color:var(--ok)">${eur(s.einnahmen)}</div></div>
+     <div class="card"><small>${esc(t("exp"))}</small><div class="num">${eur(s.ausgaben_abziehbar)}</div></div>
+     <div class="card"><small>${esc(t("profit"))}</small><div class="num" style="color:${s.gewinn>=0?"var(--accent)":"var(--err)"}">${eur(s.gewinn)}</div></div>
+   </div>
+   <h2>${esc(t("by_cat"))}</h2>
+   <table><tr><th>${esc(t("cat"))}</th><th class="r">${esc(t("cnt"))}</th><th class="r">${esc(t("gross"))}</th><th class="r">${esc(t("ded"))}</th></tr>
+   ${s.kategorien.map(k => `<tr><td>${esc(k.label)}</td><td class="r num">${k.count}</td><td class="r num">${eur(k.brutto)}</td><td class="r num">${k.key==="einnahme"?"—":eur(k.abziehbar)}</td></tr>`).join("")}</table>
+   ${s.afa_items.length ? `<p class="note">${esc(t("afa"))} ${s.afa_items.map(a => esc(a.date+" "+a.vendor+" "+eur(a.brutto))).join("; ")}</p>` : ""}
+   <h2 style="margin-top:20px">${esc(t("by_month"))}</h2>
+   <div class="bars">${Object.entries(s.monate).map(([m,v]) => `<div class="bar"><span class="num">${esc(m)}</span><div><div class="t"><i style="width:${100*v.einnahmen/max}%;background:var(--ok)"></i></div><div class="t" style="margin-top:3px"><i style="width:${100*v.ausgaben/max}%"></i></div></div><span class="num" style="text-align:right">+${eur(v.einnahmen)}<br>−${eur(v.ausgaben)}</span></div>`).join("")}</div>
+   <p class="note">${esc(s.hinweis)}</p>`;
+  $("#oc").onchange = e => { S.onlyConf = e.target.checked; loadSummary(); };
+}
+
+fillYears(); setView(); pollStatus().then(applyI); load();
+setInterval(pollStatus, 5000);
+setInterval(() => { if(S.rows.some(r => r.status==="neu"||r.status==="verarbeitung") || (S.status && S.status.queue)) load(); }, 2500);
+setInterval(load, 15000);
+</script>
+</body>
+</html>
